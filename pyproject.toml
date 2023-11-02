@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "flake8-zale"
+version = "0.1.0"
+description = "Indentation checker for flake8"
+authors = ["Kirill_Lekhov <Kirill.Lekhov@mail.ru>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "src"}]
+keywords = ["flake8", "plugin"]
+homepage = "https://github.com/Kirill-Lekhov/flake8-zale"
+repository = "https://github.com/Kirill-Lekhov/flake8-zale"
+include = ["LICENSE"]
+
+[tool.poetry.dependencies]
+python = "^3.8.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+
+[tool.poetry.plugins."flake8.extension"]
+ZL = 'src.checker:Checker'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
