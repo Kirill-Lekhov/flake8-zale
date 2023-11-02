@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -ex
+
+which python3 || which python
+which poetry
+
+poetry install --sync

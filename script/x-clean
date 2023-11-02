@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -ex
+
+find -depth -name '__pycache__' -exec rm -rfv '{}' ';'
+rm -rf dist
