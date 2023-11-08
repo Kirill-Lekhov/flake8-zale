@@ -1,16 +1,28 @@
-on: [push]
+name: Test code
+
+on:
+  push:
+
+  workflow_call:
+
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        steps:
-            - uses: actions/checkout@v4
-            - name: Set up Python ${{ matrix.python-version }}
-              uses: actions/setup-python@v4
-              with:
-                python-version: ${{ matrix.python-version }}
-            - run: pip install poetry
-            - run: script/setup
-            - run: script/test
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - run: pip install poetry
+    - run: script/setup
+    - run: script/test
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: coverate-report
+        path: htmlcov/
+        retention-days: 30
