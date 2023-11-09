@@ -7,3 +7,8 @@ This is a plugin for Flake8 that allows you to check the use of tabs, not spaces
 ```shell
 pip install flake8-zale
 ```
+
+## Error codes
+| Code     | Description                |
+|----------|----------------------------|
+| `EZL100` | Spaces are used as indents |
