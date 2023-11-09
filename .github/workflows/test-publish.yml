@@ -1,6 +1,9 @@
 name: Publish distribution to TestPyPI
 
-on: [push]
+on:
+  push:
+    tags:
+      - **
 
 jobs:
   test:
