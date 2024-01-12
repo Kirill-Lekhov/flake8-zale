@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flake8-zale"
-version = "0.2.0"
+version = "0.2.1"
 description = "Indentation checker for flake8"
 authors = ["Kirill_Lekhov <Kirill.Lekhov@mail.ru>"]
 license = "MIT"

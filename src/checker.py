@@ -59,7 +59,7 @@ class Checker:
                 if not char.isspace():
                     break
                 elif char == ' ':
-                    self.errors.append(ErrorMessage(line_number + token.start[0] - 1, index))
+                    self.errors.append(ErrorMessage(token.start[0], index))
                     break
 
             prev_line = (token.line, token.start[0])
