@@ -33,6 +33,8 @@ class TestChecker:
             (7, False, "\t     \tvalue = 10", [ErrorMessage(7, 1)]),
             (15, False, "     # Comment line", [ErrorMessage(15, 0)]),
             (15, True, "     # noqa", []),
+            (2, False, "a = [    1, 2, 3,\n    4, 5, 6\n]\n", [ErrorMessage(3, 0)]),
+            (2, False, "class Test:\n    attribute1 = 1\n    attribute2 = 2\n", [ErrorMessage(3, 0), ErrorMessage(4, 0)]),
         ],
     )
     def test___init__(self, line_number, noqa, source_code, expected_errors):

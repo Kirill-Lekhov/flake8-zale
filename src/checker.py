@@ -46,15 +46,23 @@ class Checker:
     ) -> None:
         self.errors = []
 
-        if noqa or not tokens:
+        if noqa:
             return
 
-        for index, char in enumerate(tokens[0].line):
-            if not char.isspace():
-                break
-            elif char == ' ':
-                self.errors.append(ErrorMessage(line_number, index))
-                break
+        prev_line = ("", 0)
+
+        for token in tokens:
+            if prev_line == (token.line, token.start[0]):
+                continue
+
+            for index, char in enumerate(token.line):
+                if not char.isspace():
+                    break
+                elif char == ' ':
+                    self.errors.append(ErrorMessage(line_number + token.start[0] - 1, index))
+                    break
+
+            prev_line = (token.line, token.start[0])
 
     def __iter__(self) -> Iterator[Tuple[Tuple[int, int], str]]:
         return (i.as_tuple() for i in self.errors)
