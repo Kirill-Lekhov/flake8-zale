@@ -1,68 +1,47 @@
-from typing import Iterable, Iterator, Tuple, Final, Dict
+from src.error_message import ErrorMessage, ErrorCode
+
+from typing import Iterable, Iterator, Tuple, List
 from importlib.metadata import version
-
-
-class ErrorMessage:
-    ERRORS: Final[Dict[int, str]] = {
-        100: "Spaces are used instead of tabs",
-    }
-
-    line_number: int
-    column: int
-
-    def __init__(self, line_number, column):
-        self.line_number = line_number
-        self.column = column
-
-    def __eq__(self, __value: object) -> bool:
-        return (
-            isinstance(__value, self.__class__)
-            and self.line_number == __value.line_number
-            and self.column == __value.column
-        )
-
-    def as_tuple(self) -> Tuple[Tuple[int, int], str]:
-        return (self.line_number, self.column), self.make_error(100)
-
-    @classmethod
-    def make_error(cls, code: int) -> str:
-        return f"EZL{code} - {cls.ERRORS[code]}"
+from tokenize import TokenInfo
 
 
 class Checker:
-    name: str = 'flake8-zale'
-    version: str = version('flake8-zale')
+	name: str = 'flake8-zale'
+	version: str = version('flake8-zale')
 
-    errors: Iterable[Tuple[int, str]]
+	error_messages: List[ErrorMessage]
 
-    def __init__(
-        self,
-        logical_line: str,
-        line_number: int,
-        noqa: bool,
-        previous_indent_level: int,
-        tokens: Iterable,
-        filename: str,
-    ) -> None:
-        self.errors = []
+	def __init__(
+		self,
+		logical_line: str,
+		line_number: int,
+		noqa: bool,
+		previous_indent_level: int,
+		tokens: Iterable[TokenInfo],
+		filename: str,
+	) -> None:
+		self.error_messages: List[ErrorMessage] = []
 
-        if noqa:
-            return
+		if noqa:
+			return
 
-        prev_line = ("", 0)
+		self.check_indents(tokens)
 
-        for token in tokens:
-            if prev_line == (token.line, token.start[0]):
-                continue
+	def __iter__(self) -> Iterator[Tuple[Tuple[int, int], str]]:
+		return (i.as_tuple() for i in self.error_messages)
 
-            for index, char in enumerate(token.line):
-                if not char.isspace():
-                    break
-                elif char == ' ':
-                    self.errors.append(ErrorMessage(token.start[0], index))
-                    break
+	def check_indents(self, tokens: Iterable[TokenInfo]) -> None:
+		prev_line = ("", 0)
 
-            prev_line = (token.line, token.start[0])
+		for token in tokens:
+			if prev_line == (token.line, token.start[0]):
+				continue
 
-    def __iter__(self) -> Iterator[Tuple[Tuple[int, int], str]]:
-        return (i.as_tuple() for i in self.errors)
+			for index, char in enumerate(token.line):
+				if not char.isspace():
+					break
+				elif char == ' ':
+					self.error_messages.append(ErrorMessage(ErrorCode.INVALID_INDENT, token.start[0], index))
+					break
+
+			prev_line = (token.line, token.start[0])
