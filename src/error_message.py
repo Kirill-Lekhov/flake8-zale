@@ -1,7 +1,5 @@
 from src.constant import ERROR_PREFIX, ERROR_MESSAGES, ErrorCode
 
-from typing import Tuple
-
 
 class ErrorMessage:
 	line_number: int
@@ -13,8 +11,5 @@ class ErrorMessage:
 		self.line_number = line_number
 		self.column = column
 
-	def as_tuple(self) -> Tuple[Tuple[int, int], str]:
-		return (
-			(self.line_number, self.column),
-			f"{ERROR_PREFIX}{self.error_code.value} - {ERROR_MESSAGES.get(self.error_code)}"
-		)
+	def __str__(self) -> str:
+		return f"{ERROR_PREFIX}{self.error_code.value} - {ERROR_MESSAGES.get(self.error_code)}"

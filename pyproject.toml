@@ -13,13 +13,16 @@ include = ["LICENSE"]
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
+stdlib-list = "0.10.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
 
 [tool.poetry.plugins."flake8.extension"]
-ZL = 'src.checker:Checker'
+EZL1 = "src.checker:TabIndentationChecker"
+EZL2 = "src.checker:MissedCommasChecker"
+EZL9 = "src.checker:ImportOrderChecker"
 
 [build-system]
 requires = ["poetry-core"]

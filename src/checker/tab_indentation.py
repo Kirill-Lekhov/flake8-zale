@@ -1,9 +1,9 @@
-from src.sub_checker.iface import SubChecker
+from src.checker.iface import TokensChecker
 from src.error_message import ErrorMessage
 from src.constant import ErrorCode
 
 
-class IndentTypeSubChecker(SubChecker):
+class TabIndentationChecker(TokensChecker):
 	def check(self, tokens):
 		prev_line = ("", 0)
 
