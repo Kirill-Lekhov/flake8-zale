@@ -1,4 +1,6 @@
-from src.checker import ErrorMessage, Checker, ErrorCode
+from src.error_message import ErrorMessage
+from src.checker import Checker
+from src.constant import ErrorCode
 from tests.cmp import cmp_error_messages
 
 from tokenize import tokenize
@@ -18,7 +20,15 @@ class TestChecker:
 			(7, False, "\t     \tvalue = 10", [ErrorMessage(ErrorCode.INVALID_INDENT, 1, 1)]),
 			(15, False, "     # Comment line", [ErrorMessage(ErrorCode.INVALID_INDENT, 1, 0)]),
 			(15, True, "     # noqa", []),
-			(2, False, "a = [    1, 2, 3,\n    4, 5, 6\n]\n", [ErrorMessage(ErrorCode.INVALID_INDENT, 2, 0)]),
+			(
+				2,
+				False,
+				"a = [    1, 2, 3,\n    4, 5, 6\n]\n",
+				[
+					ErrorMessage(ErrorCode.INVALID_INDENT, 2, 0),
+					ErrorMessage(ErrorCode.MISSED_COMMA, 2, 7),
+				],
+			),
 			(
 				2,
 				False,
@@ -35,7 +45,7 @@ class TestChecker:
 		source_code_buffer.write(BOM_UTF8)
 		source_code_buffer.write(source_code.encode())
 		source_code_buffer.seek(0)
-		tokens = tuple(tokenize(source_code_buffer.readline))[1:]
+		tokens = list(tokenize(source_code_buffer.readline))[1:]
 		checker = Checker('', line_number, noqa, 0, tokens, 'test')
 
 		assert len(checker.error_messages) == len(expected_errors)
