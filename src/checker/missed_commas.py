@@ -8,6 +8,7 @@ class MissedCommasChecker(TokensChecker):
 		is_block = False
 		is_multiline_block = False
 		comma_exists = False
+		error_messages = []
 
 		for token in reversed(tokens):
 			if is_block:
@@ -18,7 +19,7 @@ class MissedCommasChecker(TokensChecker):
 					comma_exists = True
 					continue
 				elif is_multiline_block and not comma_exists:
-					self.error_messages.append(ErrorMessage(ErrorCode.MISSED_COMMA, *token.end))
+					error_messages.append(ErrorMessage(ErrorCode.MISSED_COMMA, *token.end))
 
 				is_block = False
 				is_multiline_block = False
@@ -26,3 +27,5 @@ class MissedCommasChecker(TokensChecker):
 
 			if token.string in BRACKETS_CLOSE:
 				is_block = True
+
+		self.error_messages.extend(reversed(error_messages))
