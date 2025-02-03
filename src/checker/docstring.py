@@ -41,10 +41,15 @@ class DocstringChecker(LinesChecker):
 				state = State.IN_DOC
 
 				if nl_before_doc:
-					self.error_messages.append(ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, line_num, 0))
+					self.error_messages.append(ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, line_num - 1, 0))
 
 				if clean_line.lstrip("'\""):
 					self.error_messages.append(ErrorMessage(ErrorCode.INVALID_SHORT_DOCSTRING, line_num, 0))
+
+				if clean_line.endswith(DOCSTRING_QUOTES) and clean_line.rstrip("'\""):		# one line case
+					state = State.AFTER_DOC
+
+				continue
 
 			if state is State.IN_DOC and clean_line.endswith(DOCSTRING_QUOTES):
 				state = State.AFTER_DOC
@@ -55,5 +60,3 @@ class DocstringChecker(LinesChecker):
 			if state is State.AFTER_DOC:
 				if not clean_line:
 					self.error_messages.append(ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, line_num, 0))
-
-				state = State.NONE
