@@ -1,7 +1,7 @@
 from src.error_message import ErrorMessage
 
 from abc import ABC, abstractmethod
-from typing import List, Final, Union, Iterable, Tuple, Any
+from typing import List, Final, Union, Iterator, Tuple, Any
 from argparse import Namespace
 from tokenize import TokenInfo
 from ast import Module
@@ -22,7 +22,7 @@ class Checker(ABC):
 	@abstractmethod
 	def check(self, tokens_or_tree: Union[List[TokenInfo], Module, List[str]]) -> None: ...
 	@abstractmethod
-	def __iter__(self) -> Iterable[Tuple[Any, ...]]: ...
+	def __iter__(self) -> Iterator[Tuple[Any, ...]]: ...
 
 
 class TokensChecker(Checker):
@@ -44,7 +44,7 @@ class TokensChecker(Checker):
 	@abstractmethod
 	def check(self, tokens: List[TokenInfo]) -> None: ...
 
-	def __iter__(self) -> Iterable[Tuple[Tuple[int, int], str]]:
+	def __iter__(self) -> Iterator[Tuple[Tuple[int, int], str]]:
 		return (((i.line_number, i.column), str(i)) for i in self.error_messages)
 
 
@@ -64,7 +64,7 @@ class LinesChecker(Checker):
 	@abstractmethod
 	def check(self, lines: List[str]) -> None: ...
 
-	def __iter__(self) -> Iterable[Tuple[int, int, str, None]]:
+	def __iter__(self) -> Iterator[Tuple[int, int, str, None]]:
 		return ((i.line_number, i.column, str(i), None) for i in self.error_messages)
 
 
@@ -78,5 +78,5 @@ class TreeChecker(Checker):
 	@abstractmethod
 	def check(self, tree: Module) -> None: ...
 
-	def __iter__(self) -> Iterable[Tuple[int, int, str, None]]:
+	def __iter__(self) -> Iterator[Tuple[int, int, str, None]]:
 		return ((i.line_number, i.column, str(i), None) for i in self.error_messages)
