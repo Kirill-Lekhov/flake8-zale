@@ -6,6 +6,8 @@ from tokenize import NEWLINE, NL
 class ErrorCode(Enum):
 	INVALID_INDENT = 100
 	MISSED_COMMA = 200
+	INVALID_SHORT_DOCSTRING = 300
+	LINES_AROUND_DOCSTRING = 301
 	INVALID_IMPORT_ORDER = 900
 	MIXED_IMPORT = 901
 
@@ -16,6 +18,8 @@ ERROR_MESSAGES: Final[Dict[ErrorCode, str]] = {
 	ErrorCode.MISSED_COMMA: "Missing trailing comma in multiline collection",
 	ErrorCode.INVALID_IMPORT_ORDER: "Invalid package import order",
 	ErrorCode.MIXED_IMPORT: "Libraries from different sources are imported in one statement",
+	ErrorCode.INVALID_SHORT_DOCSTRING: "Incorrect formatting of one-line docstring",
+	ErrorCode.LINES_AROUND_DOCSTRING: "There should be no empty lines around docstring",
 }
 
 BRACKETS_CLOSE: Final[Set[str]] = {")", "}", "]"}

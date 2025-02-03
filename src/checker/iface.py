@@ -20,7 +20,7 @@ class Checker(ABC):
 		self.options = options
 
 	@abstractmethod
-	def check(self, tokens_or_tree: Union[List[TokenInfo], Module]) -> None: ...
+	def check(self, tokens_or_tree: Union[List[TokenInfo], Module, List[str]]) -> None: ...
 	@abstractmethod
 	def __iter__(self) -> Iterable[Tuple[Any, ...]]: ...
 
@@ -34,7 +34,6 @@ class TokensChecker(Checker):
 		# Useless, but required by flake8 plugin manager
 		logical_line: str,
 		line_number: int,
-		previous_indent_level: int,
 		filename: str,
 	) -> None:
 		super().__init__(options)
@@ -47,6 +46,26 @@ class TokensChecker(Checker):
 
 	def __iter__(self) -> Iterable[Tuple[Tuple[int, int], str]]:
 		return (((i.line_number, i.column), str(i)) for i in self.error_messages)
+
+
+class LinesChecker(Checker):
+	def __init__(
+		self,
+		lines: List[str],
+		noqa: bool,
+		options: Namespace,
+		tree: Module,
+	) -> None:
+		super().__init__(options)
+
+		if not noqa:
+			self.check(lines)
+
+	@abstractmethod
+	def check(self, lines: List[str]) -> None: ...
+
+	def __iter__(self) -> Iterable[Tuple[int, int, str, None]]:
+		return ((i.line_number, i.column, str(i), None) for i in self.error_messages)
 
 
 class TreeChecker(Checker):
