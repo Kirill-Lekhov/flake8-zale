@@ -5,6 +5,7 @@ from tokenize import NEWLINE, NL
 
 class ErrorCode(Enum):
 	INVALID_INDENT = 100
+	INVALID_PARAM_INDENT = 101
 	MISSED_COMMA = 200
 	INVALID_SHORT_DOCSTRING = 300
 	LINES_AROUND_DOCSTRING = 301
@@ -15,6 +16,7 @@ class ErrorCode(Enum):
 ERROR_PREFIX: Final[str] = "EZL"
 ERROR_MESSAGES: Final[Dict[ErrorCode, str]] = {
 	ErrorCode.INVALID_INDENT: "Spaces are used instead of tabs",
+	ErrorCode.INVALID_PARAM_INDENT: "Parameter indents should be no more than 1 level",
 	ErrorCode.MISSED_COMMA: "Missing trailing comma in multiline collection",
 	ErrorCode.INVALID_IMPORT_ORDER: "Invalid package import order",
 	ErrorCode.MIXED_IMPORT: "Libraries from different sources are imported in one statement",

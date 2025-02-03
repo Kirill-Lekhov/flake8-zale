@@ -20,7 +20,8 @@ pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
 
 [tool.poetry.plugins."flake8.extension"]
-EZL1 = "src.checker:TabIndentationChecker"
+EZL100 = "src.checker:TabIndentationChecker"
+EZL101 = "src.checker:ParamIndentChecker"
 EZL2 = "src.checker:MissedCommasChecker"
 EZL3 = "src.checker:DocstringChecker"
 EZL9 = "src.checker:ImportOrderChecker"
