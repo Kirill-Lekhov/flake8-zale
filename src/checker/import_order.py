@@ -4,7 +4,7 @@ from src.constant import ErrorCode
 
 from argparse import Namespace
 from ast import Import, ImportFrom, Module
-from typing import Final, Set
+from typing import Final, FrozenSet
 from enum import IntEnum
 from warnings import warn
 
@@ -18,16 +18,18 @@ class PackageType(IntEnum):
 
 
 class ImportOrderChecker(TreeChecker):
-	STD_PACKAGES: Final[Set[str]] = set(stdlib_list())
+	STD_PACKAGES: Final[FrozenSet[str]] = frozenset(stdlib_list())
 
-	project_packages: Final[Set[str]]
+	project_packages: Final[FrozenSet[str]]
 
 	def __init__(self, tree: Module, noqa: bool, options: Namespace) -> None:
 		super(TreeChecker, self).__init__(options)
 
 		if not noqa:
-			self.project_packages = set((self.options.project_packages or "").split(","))
+			self.project_packages = frozenset((self.options.project_packages or "").split(","))
 			self.check(tree)
+		else:
+			self.project_packages = frozenset()
 
 	def check(self, tree):
 		project_packages_imported = False
@@ -67,6 +69,7 @@ class ImportOrderChecker(TreeChecker):
 						external_package_import = True
 				else:
 					project_package_import = True
+
 			else:
 				continue
 
