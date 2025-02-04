@@ -24,15 +24,18 @@ class LinesIterator:
 		finally:
 			self.ptr += 1
 
-	def __bool__(self) -> bool:
-		return self.ptr < self.count
-
 
 class DocstringChecker(LinesChecker):
 	def check(self, lines):
+		try:
+			self._check(lines)
+		except StopIteration:
+			pass
+
+	def _check(self, lines):
 		lines_iterator = LinesIterator(lines)
 
-		while lines_iterator:
+		while lines_iterator.ptr < lines_iterator.count:
 			clean_line = next(lines_iterator).strip()
 
 			if clean_line.startswith(DEF_STATEMENTS):
@@ -40,7 +43,7 @@ class DocstringChecker(LinesChecker):
 				empty_line_before = not clean_line
 
 				# Skip all empty lines
-				while not clean_line and lines_iterator:
+				while not clean_line:
 					clean_line = next(lines_iterator).strip()
 
 				if clean_line.startswith(DOCSTRING_QUOTES):
@@ -60,7 +63,7 @@ class DocstringChecker(LinesChecker):
 					clean_line = next(lines_iterator).strip()
 
 					# Skip docstring body
-					while not clean_line.endswith(DOCSTRING_QUOTES) and lines_iterator:
+					while not clean_line.endswith(DOCSTRING_QUOTES):
 						clean_line = next(lines_iterator).strip()
 
 					if clean_line.rstrip("'\""):

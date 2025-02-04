@@ -65,6 +65,7 @@ class TestDocstringChecker:
 			"'''\n",
 			"Not docstring, just multiline comment\n",
 			"'''\n",
+			"def test(): ...\n",
 		])
 		assert checker.error_messages == []
 
