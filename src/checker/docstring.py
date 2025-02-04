@@ -57,6 +57,10 @@ class DocstringChecker(LinesChecker):
 				if clean_line.rstrip("'\"") and last_state is not State.IN_DEF:
 					self.error_messages.append(ErrorMessage(ErrorCode.INVALID_SHORT_DOCSTRING, line_num, 0))
 
+				continue
+
 			if state is State.AFTER_DOC:
-				if not clean_line:
+				if clean_line:
+					state = State.NONE
+				else:
 					self.error_messages.append(ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, line_num, 0))
