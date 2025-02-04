@@ -40,6 +40,8 @@ class TestTokensChecker:
 			"LOGICAL_LINE",
 			15,
 			"FILENAME",
+			8,
+			"\t",
 		)
 		assert checker.options is ns
 		assert last_checked_tokens == [6, 2, 3]
@@ -51,6 +53,8 @@ class TestTokensChecker:
 			"LOGICAL_LINE",
 			15,
 			"FILENAME",
+			8,
+			"\t",
 		)
 		assert last_checked_tokens == [6, 2, 3]
 
@@ -68,6 +72,8 @@ class TestTokensChecker:
 			"LOGICAL_LINE",
 			15,
 			"FILENAME",
+			8,
+			"\t",
 		)
 		checker.error_messages = [
 			ErrorMessage(ErrorCode.INVALID_INDENT, 15, 16),

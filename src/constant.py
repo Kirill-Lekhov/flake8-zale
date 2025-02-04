@@ -29,3 +29,5 @@ BRACKETS_CLOSE: Final[Set[str]] = {")", "}", "]"}
 NL_TOKEN_TYPES: Final[Set[int]] = {NEWLINE, NL}
 
 COMMA: Final[str] = ","
+
+TAB_SIZE: Final[int] = 8

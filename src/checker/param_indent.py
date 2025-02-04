@@ -1,6 +1,6 @@
 from src.checker.iface import TokensChecker
 from src.error_message import ErrorMessage
-from src.constant import ErrorCode
+from src.constant import ErrorCode, TAB_SIZE
 
 from tokenize import INDENT, DEDENT, ENCODING
 from typing import Final, FrozenSet
@@ -8,22 +8,28 @@ from typing import Final, FrozenSet
 
 DEFINITIONS: Final[FrozenSet[str]] = frozenset(("def", "class"))
 INDENT_CHARS: Final[FrozenSet[str]] = frozenset(" \t")
-SKIPPED_TOKEN_TYPES: Final[FrozenSet[int]] = frozenset((DEDENT, ENCODING))
+SKIPPED_TOKEN_TYPES: Final[FrozenSet[int]] = frozenset((DEDENT, ENCODING, INDENT))
 
 
 class ParamIndentChecker(TokensChecker):
 	def check(self, tokens):
-		base_indent_level = 0
-
 		for token in tokens:
-			if token.type == INDENT:
-				base_indent_level += 1
-			elif token.type in SKIPPED_TOKEN_TYPES:
+			if token.type in SKIPPED_TOKEN_TYPES:
 				continue
 			elif token.string in DEFINITIONS:
 				break
 			else:
 				return
+
+		if self.indent_char == " ":
+			base_indent_level = self.indent_level
+		elif self.indent_char == "\t":
+			base_indent_level = self.indent_level // TAB_SIZE
+		else:
+			if self.indent_level:
+				raise RuntimeError(f"Unknown indent char: {self.indent_char}")
+			else:
+				base_indent_level = 0
 
 		prev_line = None
 

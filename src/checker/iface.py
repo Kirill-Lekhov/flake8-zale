@@ -1,7 +1,7 @@
 from src.error_message import ErrorMessage
 
 from abc import ABC, abstractmethod
-from typing import List, Final, Union, Iterator, Tuple, Any
+from typing import List, Final, Union, Iterator, Tuple, Any, Optional
 from argparse import Namespace
 from tokenize import TokenInfo
 from ast import Module
@@ -26,6 +26,9 @@ class Checker(ABC):
 
 
 class TokensChecker(Checker):
+	indent_level: int
+	indent_char: Optional[str]
+
 	def __init__(
 		self,
 		tokens: List[TokenInfo],
@@ -35,8 +38,12 @@ class TokensChecker(Checker):
 		logical_line: str,
 		line_number: int,
 		filename: str,
+		indent_level: int,
+		indent_char: Optional[str],
 	) -> None:
 		super().__init__(options)
+		self.indent_level = indent_level
+		self.indent_char = indent_char
 
 		if not noqa:
 			self.check(tokens)

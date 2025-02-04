@@ -9,7 +9,7 @@ from codecs import BOM_UTF8
 
 
 def make_checker(tokens: Optional[List[TokenInfo]] = None):
-	return MissedCommasChecker(tokens or [], False, Namespace(), "", 0, "")
+	return MissedCommasChecker(tokens or [], False, Namespace(), "", 0, "", 0, "\t")
 
 
 class TestMissedCommasChecker:
