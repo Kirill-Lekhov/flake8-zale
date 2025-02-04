@@ -49,6 +49,7 @@ class B:
 class C(
 	A,
 	B,
+	# D,
 ):
 	def __init__(
 		self,

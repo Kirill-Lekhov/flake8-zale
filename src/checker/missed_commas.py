@@ -2,6 +2,8 @@ from src.checker.iface import TokensChecker
 from src.error_message import ErrorMessage
 from src.constant import ErrorCode, BRACKETS_CLOSE, NL_TOKEN_TYPES, COMMA
 
+from tokenize import COMMENT
+
 
 class MissedCommasChecker(TokensChecker):
 	def check(self, tokens):
@@ -11,6 +13,9 @@ class MissedCommasChecker(TokensChecker):
 		error_messages = []
 
 		for token in reversed(tokens):
+			if token.type == COMMENT:
+				continue
+
 			if is_block:
 				if token.type in NL_TOKEN_TYPES:
 					is_multiline_block = True
