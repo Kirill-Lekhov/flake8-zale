@@ -2,65 +2,70 @@ from src.checker.iface import LinesChecker
 from src.error_message import ErrorMessage
 from src.constant import ErrorCode
 
-from typing import Final, Tuple, Collection
-from enum import IntEnum
+from typing import Final, Tuple, FrozenSet, List
 
 
 DEF_STATEMENTS: Final[Tuple[str, ...]] = ("def", "class")
 DOCSTRING_QUOTES: Final[Tuple[str, ...]] = ("'''", '"""')
+INDENT_CHARS: Final[FrozenSet[str]] = frozenset(" \t")
 
 
-class State(IntEnum):
-	NONE = 0
-	IN_DEF = 1
-	IN_DOC = 2
-	AFTER_DOC = 3
+class LinesIterator:
+	def __init__(self, lines: List[str]) -> None:
+		self.lines = lines
+		self.count = len(lines)
+		self.ptr = 0
 
-	def one_of(self, states: Collection["State"]) -> bool:
-		return any(map(lambda x: self is x, states))
+	def __next__(self):
+		try:
+			return self.lines[self.ptr]
+		except IndexError:
+			raise StopIteration()
+		finally:
+			self.ptr += 1
 
 
 class DocstringChecker(LinesChecker):
 	def check(self, lines):
-		state = State.NONE
-		last_state = State.NONE
-		nl_before_doc = False
+		lines_iterator = LinesIterator(lines)
 
-		for line_num, line_text in enumerate(lines, 1):
-			clean_line = line_text.strip()
-			last_state = state
+		while lines_iterator.ptr < lines_iterator.count:
+			clean_line = next(lines_iterator).strip()
 
-			if state.one_of((State.NONE, State.AFTER_DOC, State.IN_DEF)) and clean_line.startswith(DEF_STATEMENTS):
-				state = State.IN_DEF
-				nl_before_doc = False
+			if clean_line.startswith(DEF_STATEMENTS):
+				clean_line = next(lines_iterator).strip()
+				empty_line_before = not clean_line
 
-			if state is State.IN_DEF and not clean_line:
-				nl_before_doc = True
+				# Skip all empty lines
+				while not clean_line:
+					clean_line = next(lines_iterator).strip()
 
-			if state is State.IN_DEF and clean_line.startswith(DOCSTRING_QUOTES):
-				state = State.IN_DOC
+				if clean_line.startswith(DOCSTRING_QUOTES):
+					if empty_line_before:
+						self.error_messages.append(
+							ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, lines_iterator.ptr - 1, 0),
+						)
 
-				if nl_before_doc:
-					self.error_messages.append(ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, line_num - 1, 0))
+					if clean_line.lstrip("'\""):
+						self.error_messages.append(
+							ErrorMessage(ErrorCode.INVALID_SHORT_DOCSTRING, lines_iterator.ptr, 0),
+						)
 
-				if clean_line.lstrip("'\""):
-					self.error_messages.append(ErrorMessage(ErrorCode.INVALID_SHORT_DOCSTRING, line_num, 0))
+						if clean_line.endswith(DOCSTRING_QUOTES):
+							continue
 
-				if clean_line.endswith(DOCSTRING_QUOTES) and clean_line.rstrip("'\""):		# one line case
-					state = State.AFTER_DOC
+					clean_line = next(lines_iterator).strip()
 
-				continue
+					# Skip docstring body
+					while not clean_line.endswith(DOCSTRING_QUOTES):
+						clean_line = next(lines_iterator).strip()
 
-			if state is State.IN_DOC and clean_line.endswith(DOCSTRING_QUOTES):
-				state = State.AFTER_DOC
+					if clean_line.rstrip("'\""):
+						self.error_messages.append(
+							ErrorMessage(ErrorCode.INVALID_SHORT_DOCSTRING, lines_iterator.ptr, 0),
+						)
 
-				if clean_line.rstrip("'\"") and last_state is not State.IN_DEF:
-					self.error_messages.append(ErrorMessage(ErrorCode.INVALID_SHORT_DOCSTRING, line_num, 0))
-
-				continue
-
-			if state is State.AFTER_DOC:
-				if clean_line:
-					state = State.NONE
-				else:
-					self.error_messages.append(ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, line_num, 0))
+					if not next(lines_iterator).strip():
+						self.error_messages.append(
+							ErrorMessage(ErrorCode.LINES_AROUND_DOCSTRING, lines_iterator.ptr, 0),
+						)

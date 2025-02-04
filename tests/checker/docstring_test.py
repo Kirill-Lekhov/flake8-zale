@@ -1,17 +1,11 @@
-from src.checker.docstring import State, DocstringChecker
+from src.checker.docstring import DocstringChecker, LinesIterator
 from src.constant import ErrorCode
 
 from argparse import Namespace
 from ast import Module
 from typing import Optional, List
 
-
-class TestState:
-	def test_one_of(self):
-		assert not State.AFTER_DOC.one_of(())
-		assert not State.AFTER_DOC.one_of((State.NONE, State.IN_DEF, State.IN_DOC))
-		assert State.AFTER_DOC.one_of((State.AFTER_DOC, ))
-		assert State.AFTER_DOC.one_of((State.AFTER_DOC, State.NONE, State.IN_DEF, State.IN_DOC))
+import pytest
 
 
 def make_checker(lines: Optional[List[str]] = None) -> DocstringChecker:
@@ -21,6 +15,29 @@ def make_checker(lines: Optional[List[str]] = None) -> DocstringChecker:
 		Namespace(),
 		Module([], []),
 	)
+
+
+class TestLinesIterator:
+	def test___init__(self):
+		iterator = LinesIterator([])
+		assert iterator.lines == []
+		assert iterator.count == 0
+		assert iterator.ptr == 0
+
+		iterator = LinesIterator(["1", "2", "3"])
+		assert iterator.lines == ["1", "2", "3"]
+		assert iterator.count == 3
+		assert iterator.ptr == 0
+
+	def test___next__(self):
+		iterator = LinesIterator(["1"])
+		assert next(iterator) == "1"
+		assert iterator.ptr == 1
+
+		with pytest.raises(StopIteration):
+			next(iterator)
+
+		assert iterator.ptr == 2
 
 
 class TestDocstringChecker:
@@ -39,6 +56,26 @@ class TestDocstringChecker:
 			"\t\tThe __init__ method docstring.\n",
 			"\t\t'''\n",
 			"\t\tpass\n",
+			"\n",
+			"\n",
+			"def main():\n",
+			"\tpass\n",
+			"\n",
+			"\n",
+			"'''\n",
+			"Not docstring, just multiline comment\n",
+			"'''\n",
+		])
+		assert checker.error_messages == []
+
+		checker = make_checker([
+			"class MyClass:\n",
+			"\tdef __init__(self):\n",
+			"\t\tpass\n",
+			"\n",
+			"\n",
+			"def main():\n",
+			"\tpass\n",
 		])
 		assert checker.error_messages == []
 
