@@ -20,7 +20,7 @@ ERROR_MESSAGES: Final[Dict[ErrorCode, str]] = {
 	ErrorCode.MISSED_COMMA: "Missing trailing comma in multiline collection",
 	ErrorCode.INVALID_IMPORT_ORDER: "Invalid package import order",
 	ErrorCode.MIXED_IMPORT: "Libraries from different sources are imported in one statement",
-	ErrorCode.INVALID_SHORT_DOCSTRING: "Incorrect formatting of one-line docstring",
+	ErrorCode.INVALID_SHORT_DOCSTRING: "Invalid formatting of one-line docstring",
 	ErrorCode.LINES_AROUND_DOCSTRING: "There should be no empty lines around docstring",
 }
 
